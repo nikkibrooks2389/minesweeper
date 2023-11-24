@@ -1,12 +1,12 @@
 
 import './App.css';
-import Minesweeper from './MineSweeper';
+import Board from './components/Board';
 
 
 function App() {
   return (
     <div className="App">
-      <Minesweeper />
+      <Board />
     </div>
   );
 }
