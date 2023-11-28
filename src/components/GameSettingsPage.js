@@ -7,26 +7,26 @@ import { FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material
 const SettingsWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  padding: 20px;
-  font-family: 'VT323', monospace;
+  padding: 2rem;
+  font-family: "Press Start 2P", cursive;
   background-color: #f4f4f4;
-  border-radius: 20px; /* Add rounded corners */
-
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-style: dashed; /* Change the border style */
+  border-color: #607d8b; /* Gray */ /* Change the border color */
+  border-radius: 20px;
 `;
 
+
 const SettingItem = styled.div`
-  margin: 10px;
+  margin: 20px;
   background-color: #fff;
   border-radius: 10px;
-  padding: 20px;
+  padding: 1rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
   transition: transform 0.3s ease-in-out;
 
-  &:hover {
-    transform: scale(1.05);
-  }
 `;
 
 const Title = styled.h1`
@@ -36,6 +36,14 @@ const Title = styled.h1`
   text-transform: uppercase;
   letter-spacing: 2px;
 `;
+
+const SettingsContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: ${(props) => props.theme.background};
+  `
 
 function GameSettingsPage({ onStartGame }) {
   const dispatch = useDispatch();
@@ -55,58 +63,60 @@ function GameSettingsPage({ onStartGame }) {
   };
 
   return (
-    <SettingsWrapper>
-      <Title>Game Settings</Title>
+    <SettingsContainer>
+      <SettingsWrapper>
+        <Title>MINESWEEPER</Title>
 
-      <SettingItem>
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel id="difficulty-label">Difficulty</InputLabel>
-          <Select
-            value={selectedDifficulty}
-            onChange={(e) => setSelectedDifficulty(e.target.value)}
-            label="Difficulty"
-          >
-            <MenuItem value="beginner">Beginner</MenuItem>
-            <MenuItem value="normal">Normal</MenuItem>
-            <MenuItem value="hard">Hard</MenuItem>
-            <MenuItem value="expert">Expert</MenuItem>
-          </Select>
-        </FormControl>
-      </SettingItem>
+        <SettingItem>
+          <FormControl sx={{ minWidth: 200 }}>
+            <InputLabel id="difficulty-label">Difficulty</InputLabel>
+            <Select
+              value={selectedDifficulty}
+              onChange={(e) => setSelectedDifficulty(e.target.value)}
+              label="Difficulty"
+            >
+              <MenuItem value="beginner">Beginner</MenuItem>
+              <MenuItem value="normal">Normal</MenuItem>
+              <MenuItem value="hard">Hard</MenuItem>
+              <MenuItem value="expert">Expert</MenuItem>
+            </Select>
+          </FormControl>
+        </SettingItem>
 
-      <SettingItem>
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel>Theme</InputLabel>
-          <Select
-            value={selectedTheme}
-            onChange={(e) => setSelectedTheme(e.target.value)}
-            label="Theme"
-          >
-            <MenuItem value="light">Light</MenuItem>
-            <MenuItem value="dark">Dark</MenuItem>
-          </Select>
-        </FormControl>
-      </SettingItem>
+        <SettingItem>
+          <FormControl sx={{ minWidth: 200 }}>
+            <InputLabel>Theme</InputLabel>
+            <Select
+              value={selectedTheme}
+              onChange={(e) => setSelectedTheme(e.target.value)}
+              label="Theme"
+            >
+              <MenuItem value="light">Light</MenuItem>
+              <MenuItem value="dark">Dark</MenuItem>
+            </Select>
+          </FormControl>
+        </SettingItem>
 
-      <SettingItem>
-        <FormControl sx={{ minWidth: 200 }}>
-          <InputLabel>Grid Size</InputLabel>
-          <Select
-            value={selectedGridSize}
-            onChange={(e) => setSelectedGridSize(e.target.value)}
-            label="Grid Size"
-          >
-            <MenuItem value="small">Small</MenuItem>
-            <MenuItem value="medium">Medium</MenuItem>
-            <MenuItem value="large">Large</MenuItem>
-          </Select>
-        </FormControl>
-      </SettingItem>
+        <SettingItem>
+          <FormControl sx={{ minWidth: 200 }}>
+            <InputLabel>Grid Size</InputLabel>
+            <Select
+              value={selectedGridSize}
+              onChange={(e) => setSelectedGridSize(e.target.value)}
+              label="Grid Size"
+            >
+              <MenuItem value="small">Small</MenuItem>
+              <MenuItem value="medium">Medium</MenuItem>
+              <MenuItem value="large">Large</MenuItem>
+            </Select>
+          </FormControl>
+        </SettingItem>
 
-      <Button variant="contained" onClick={handleStartGame}>
-        Start Game
-      </Button>
-    </SettingsWrapper>
+        <Button style={{ marginTop: "1rem" }} size="large" variant="contained" onClick={handleStartGame}>
+          Start Game
+        </Button>
+      </SettingsWrapper>
+    </SettingsContainer>
   );
 }
 

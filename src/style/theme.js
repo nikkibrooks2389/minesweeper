@@ -1,9 +1,10 @@
 // themes.js
 export const lightTheme = {
     background: '#E0E0E0',
+    secondaryBackground: '#C0C0C0',
     textColor: '#000000',
-    cellBackgroundRevealed: '#E0E0E0',
-    cellBackgroundUnrevealed: '#FFFFFF',
+    cellBackgroundRevealed: '#FFFFFF',
+    cellBackgroundUnrevealed: '#E0E0E0',
     cellTextColor: '#000000',
     cellvalue1: '#0000FF',
     cellvalue2: '#008000',

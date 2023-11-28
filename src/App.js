@@ -10,13 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { selectGameSettings } from './redux/gameSettingsSlice';
 import { GlobalStyle } from './style/globalStyle';
 
-const AppWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: ${(props) => props.theme.background};
-`;
+
 
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
@@ -33,7 +27,7 @@ function App() {
   return (
     <ThemeProvider theme={themeToApply}>
       <GlobalStyle />
-      <AppWrapper>
+      <div>
         {gameStarted ? (
           // Render the game board or relevant component when the game has started
           // Replace this with your game board component
@@ -42,7 +36,7 @@ function App() {
           // Render the GameSettingsPage when the game has not started
           <GameSettingsPage onStartGame={handleStartGame} />
         )}
-      </AppWrapper>
+      </div>
     </ThemeProvider>
   );
 }
