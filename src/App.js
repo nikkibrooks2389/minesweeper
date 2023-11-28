@@ -31,7 +31,7 @@ function App() {
         {gameStarted ? (
           // Render the game board or relevant component when the game has started
           // Replace this with your game board component
-          <Board />
+          <Board theme={themeToApply} />
         ) : (
           // Render the GameSettingsPage when the game has not started
           <GameSettingsPage onStartGame={handleStartGame} />

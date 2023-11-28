@@ -72,8 +72,6 @@ export default function Cell({ details, updateFlag, revealCell, isFlagMode }) {
             default: return '35px'; // default size
         }
     };
-
-    console.log(getCellSize(gameSettings.gridSize))
     return (
         <StyledCell details={details} gridSize={getCellSize(gameSettings.gridSize)} onClick={(e) => handleClick(e)}>
             {details.flagged ? (

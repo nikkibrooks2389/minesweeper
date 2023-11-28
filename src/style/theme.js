@@ -1,4 +1,6 @@
 // themes.js
+import { breakpoints } from './breakpoints';
+
 export const lightTheme = {
     background: '#E0E0E0',
     secondaryBackground: '#C0C0C0',
@@ -11,7 +13,7 @@ export const lightTheme = {
     cellvalue3: '#FF0000',
     cellBoxShadow: '2px 2px 5px rgba(0, 0, 0, 0.2) inset', // Lighter shadow on top
     cellBackgroundGradient: 'linear-gradient(to bottom, #dfe4ea, #bdc3c7 50%, #bdc3c7)', // Gradient for old-school effect
-
+    breakpoints: breakpoints,
     // Add more styling properties as needed
 };
 
@@ -26,7 +28,7 @@ export const darkTheme = {
     cellvalue3: '#E4786D',
     cellBoxShadow: '2px 2px 5px rgba(255, 255, 255, 0.2) inset', // Lighter shadow on top (for dark theme)
     cellBackgroundGradient: 'linear-gradient(to bottom, #444444, #222222 50%, #222222)', // Gradient for old-school effect (for dark theme)
-
+    breakpoints: breakpoints,
     // Add more styling properties as needed
 };
 

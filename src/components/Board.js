@@ -102,7 +102,7 @@ const Emoji = styled.span`
     font-size: 1.3rem; 
 `;
 
-function Board() {
+function Board({ theme }) {
     const [grid, setGrid] = useState([]);
     const [nonMinecount, setNonMinecount] = useState(0);
     const [mineLocation, setMineLocation] = useState([]);
@@ -159,11 +159,15 @@ function Board() {
             // Ensure the DOM is fully loaded
             if (boardRef.current) {
                 const isBoardWider = boardRef.current.offsetWidth > window.innerWidth;
+                const isMoble = window.innerWidth < parseInt(theme.breakpoints.sm, 10);;
+                console.log(isMoble)
+
+
                 setTopPanelStyle({
                     padding: '1rem',
-                    width: isBoardWider ? '100vw' : boardRef.current.offsetWidth + 'px',
-                    position: isBoardWider ? 'fixed' : 'initial',
-                    top: isBoardWider ? '0' : 'initial',
+                    width: isBoardWider || isMoble ? '100vw' : boardRef.current.offsetWidth + 'px',
+                    position: isBoardWider || isMoble ? 'fixed' : 'initial',
+                    top: isBoardWider || isMoble ? '0' : 'initial',
                 });
 
                 setBoardContainerStyle({
