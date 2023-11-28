@@ -13,23 +13,32 @@ const StyledCell = styled.div`
   font-size: 20px;
   cursor: pointer;
   transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+  font-family: 'VT323', monospace;
+  ${props =>
+        !props?.details?.revealed &&
+        css`
+      background-color: ${props.theme.cellBackgroundUnrevealed};
+      box-shadow: ${props.theme.cellBoxShadow}; /* Lighter shadow on top */
+      background-image: ${props.theme.cellBackgroundGradient}; /* Gradient for old-school effect */
+    `}
 
-  ${props => !props?.details?.revealed && css`
-  background-color: #bdc3c7;
-  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); /* Shadow for 3D effect */
-  background-image: linear-gradient(to bottom right, #dfe4ea, #bdc3c7); /* Gradient for 3D effect */
-
-  `}
-
-  ${props => props?.details?.revealed && css`
-  color: ${props => props?.details?.value === 1 ? 'blue' : props?.details?.value === 2 ? 'green' : props?.details?.value === 3 ? 'red' : 'black'};
-  background-color: #bdc3c7;
-  box-shadow: none; /* No shadow */
-  `}
+${props =>
+        props?.details?.revealed &&
+        css`
+      color: ${props =>
+                props?.details?.value === 1
+                    ? props.theme.cellvalue1
+                    : props?.details?.value === 2
+                        ? props.theme.cellvalue2
+                        : props?.details?.value === 3
+                            ? props.theme.cellvalue3
+                            : props.theme.cellTextColor};
+      background-color: ${props.theme.cellBackgroundRevealed};
+      box-shadow: none; /* No shadow */
+    `}
 `;
 
 export default function Cell({ details, updateFlag, revealCell, isFlagMode }) {
-
     const handleClick = (e) => {
         if (isFlagMode) {
             updateFlag(e, details.x, details.y); // Handle flagging
@@ -40,7 +49,13 @@ export default function Cell({ details, updateFlag, revealCell, isFlagMode }) {
 
     return (
         <StyledCell details={details} onClick={(e) => handleClick(e)}>
-            {details.flagged ? <FontAwesomeIcon icon={faFlag} style={{ color: 'red' }} /> : details.revealed && details.value != 0 ? details.value : ""}
+            {details.flagged ? (
+                <FontAwesomeIcon icon={faFlag} style={{ color: 'red' }} />
+            ) : details.revealed && details.value !== 0 ? (
+                details.value
+            ) : (
+                ''
+            )}
         </StyledCell>
     );
 }
