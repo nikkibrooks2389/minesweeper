@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setDifficulty, setTheme, setGridSize } from '../redux/gameSettingsSlice';
 import { FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
-
+import { useNavigate } from 'react-router-dom';
+import { selectGameSettings } from '../redux/gameSettingsSlice';
 const SettingsWrapper = styled.div`
   display: flex;
   flex-direction: column;
@@ -47,20 +48,18 @@ const SettingsContainer = styled.div`
   `
 
 function GameSettingsPage({ onStartGame }) {
-  const dispatch = useDispatch();
+
   const [selectedDifficulty, setSelectedDifficulty] = useState('beginner');
   const [selectedTheme, setSelectedTheme] = useState('light');
   const [selectedGridSize, setSelectedGridSize] = useState('medium');
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const gameSettings = useSelector(selectGameSettings);
   // Function to handle starting the game with selected settings
   const handleStartGame = () => {
-    // Dispatch actions to update Redux state
-    dispatch(setDifficulty(selectedDifficulty));
-    dispatch(setTheme(selectedTheme));
-    dispatch(setGridSize(selectedGridSize));
+    navigate('/board');
 
-    // Pass the selected settings to the parent component (App) to start the game
-    onStartGame(selectedDifficulty, selectedTheme, selectedGridSize);
   };
 
   return (
@@ -72,8 +71,8 @@ function GameSettingsPage({ onStartGame }) {
           <FormControl sx={{ minWidth: 200 }}>
             <InputLabel id="difficulty-label">Difficulty</InputLabel>
             <Select
-              value={selectedDifficulty}
-              onChange={(e) => setSelectedDifficulty(e.target.value)}
+              value={gameSettings.difficulty}
+              onChange={(e) => dispatch(setDifficulty(e.target.value))}
               label="Difficulty"
             >
               <MenuItem value="beginner">Beginner</MenuItem>
@@ -88,8 +87,8 @@ function GameSettingsPage({ onStartGame }) {
           <FormControl sx={{ minWidth: 200 }}>
             <InputLabel>Theme</InputLabel>
             <Select
-              value={selectedTheme}
-              onChange={(e) => setSelectedTheme(e.target.value)}
+              value={gameSettings.theme}
+              onChange={(e) => dispatch(setTheme(e.target.value))}
               label="Theme"
             >
               <MenuItem value="light">Light</MenuItem>
@@ -102,8 +101,8 @@ function GameSettingsPage({ onStartGame }) {
           <FormControl sx={{ minWidth: 200 }}>
             <InputLabel>Grid Size</InputLabel>
             <Select
-              value={selectedGridSize}
-              onChange={(e) => setSelectedGridSize(e.target.value)}
+              value={gameSettings.gridSize}
+              onChange={(e) => dispatch(setGridSize(e.target.value))}
               label="Grid Size"
             >
               <MenuItem value="small">Small</MenuItem>

@@ -3,12 +3,14 @@ import { initBoard } from '../Util/initBoard';
 import { revealed } from '../Util/reveal';
 import Cell from './Cell';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFlag } from '@fortawesome/free-solid-svg-icons';
+import { faFlag, faCog } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectGameSettings } from '../redux/gameSettingsSlice';
+import { useNavigate } from 'react-router-dom';
 
-const FlagButton = styled.button`
+
+const PannelButton = styled.button`
   background-color:${(props) => props.theme.cellBackgroundRevealed};
   color: black;
   padding: 8px 10px ;
@@ -27,7 +29,7 @@ const BoardWrapper = styled.div`
     text-align: center;
     font-size: 35px;
     width: fit-content;
-    padding: 20px;
+    // padding: 20px;
 `
 
 const Row = styled.div`
@@ -43,14 +45,19 @@ const ResetBoard = styled.button`
     padding: 3px ;
     transition: all 0.2s ease-in-out;
     cursor: pointer;
-  
-`;
+    `;
 
 
-const GameOver = styled.div`
-   color: red;
-   font-size: 50px;
+const GameStatus = styled.div`
+  color: red;
+  font-size: 2rempx;
+  visibility: ${props => props.show ? 'visible' : 'hidden'};
+  font-family: "Press Start 2P", cursive;
+  padding: 1rem;
+  min-height: 40px; // Adjust the value based on the space needed
+  text-align: center;
 `;
+
 
 
 const TopPanel = styled.div`
@@ -94,6 +101,7 @@ const TopPanelCenter = styled.div`
 
 const Grid = styled.div`
     width: fit-content;
+    padding: 1rem;
 `;
 
 
@@ -102,7 +110,7 @@ const Emoji = styled.span`
     font-size: 1.3rem; 
 `;
 
-function Board({ theme }) {
+function Board({ theme, ...props }) {
     const [grid, setGrid] = useState([]);
     const [nonMinecount, setNonMinecount] = useState(0);
     const [mineLocation, setMineLocation] = useState([]);
@@ -116,12 +124,19 @@ function Board({ theme }) {
     const [boardContainerStyle, setBoardContainerStyle] = useState({});
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+
     const gameSettings = useSelector(selectGameSettings);
 
     const timerRef = useRef(null);
     const boardRef = useRef(null);
 
     const { rows, columns, mineCount } = gameSettings;
+
+    const goToSettings = () => {
+        freshBoard();
+        navigate('/settings');
+    };
 
     const freshBoard = () => {
         // Use gameSettings to get rows, columns, and mineCount
@@ -164,19 +179,20 @@ function Board({ theme }) {
 
 
                 setTopPanelStyle({
-                    padding: '1rem',
+                    padding: '1rem 2rem',
                     width: isBoardWider || isMoble ? '100vw' : boardRef.current.offsetWidth + 'px',
                     position: isBoardWider || isMoble ? 'fixed' : 'initial',
-                    top: isBoardWider || isMoble ? '0' : 'initial',
+                    top: isBoardWider || isMoble ? '0' : null,
                 });
 
                 setBoardContainerStyle({
                     display: 'flex',
                     justifyContent: isBoardWider ? 'unset' : 'center',
                     alignItems: isBoardWider ? 'unset' : 'center',
-                    marginTop: isBoardWider ? '5rem' : 'initial',
+                    marginTop: isBoardWider ? '6rem' : '0',
                     flexDirection: "column",
-                    height: isBoardWider ? `calc(100vh - 100px)` : '100vh',
+                    height: isBoardWider ? `calc(100vh - 11rem)` : '100vh',
+
                 });
             }
         };
@@ -259,24 +275,25 @@ function Board({ theme }) {
             <TopPanel style={topPanelStyle}>
                 <ScoreBoard> {minesLeft}</ScoreBoard>
                 <TopPanelCenter>
-                    <FlagButton onClick={toggleFlagMode} isFlagMode={isFlagMode}>
+                    <PannelButton onClick={goToSettings}>
+                        <FontAwesomeIcon icon={faCog} style={{ cursor: 'pointer' }} /></PannelButton>
+
+                    <PannelButton onClick={toggleFlagMode} isFlagMode={isFlagMode}>
                         {isFlagMode ? (
                             <FontAwesomeIcon icon={faFlag} style={{ color: 'red' }} />
                         ) : (
                             <FontAwesomeIcon icon={faFlag} style={{ color: 'grey' }} />
                         )}
-                    </FlagButton>
+                    </PannelButton>
                     <ResetBoard onClick={() => freshBoard()}>   <Emoji>{gameOver ? '😢' : '😀'}</Emoji></ResetBoard>
                 </TopPanelCenter>
                 <ScoreBoard> {timer} </ScoreBoard>
             </TopPanel>
             <BoardWrapper>
 
-
-
-                {gameOver && <GameOver>GAME OVER</GameOver>}
-                {gameWon && <GameOver>YOU WIN!</GameOver>} {/* Display win message */}
-
+                <GameStatus show={gameOver || gameWon}>
+                    {gameOver ? "GAME OVER" : gameWon ? "YOU WIN!" : ""}
+                </GameStatus>
                 <Grid ref={boardRef}>
                     {grid.map((singlerow, index1) => (
                         <Row key={index1}>
