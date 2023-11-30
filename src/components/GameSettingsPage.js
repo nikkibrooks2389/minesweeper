@@ -11,7 +11,7 @@ const SettingsWrapper = styled.div`
   align-items: center;
   padding: 2rem;
   font-family: "Press Start 2P", cursive;
-  background-color: #f4f4f4;
+  background-color: ${props => props.theme.secondaryBackground};
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-style: dashed; /* Change the border style */
   border-color: #607d8b; /* Gray */ /* Change the border color */
@@ -21,9 +21,9 @@ const SettingsWrapper = styled.div`
 
 const SettingItem = styled.div`
   margin: 20px;
-  background-color: #fff;
+  background-color: #ebebeb;
   border-radius: 10px;
-  padding: 1rem;
+  padding: .8rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-in-out;
 `;
@@ -31,7 +31,7 @@ const SettingItem = styled.div`
 const Title = styled.h1`
   font-size: 2rem;
   margin-bottom: 20px;
-  color: #333;
+  color: ${props => props.theme.textColor};
   text-transform: uppercase;
   letter-spacing: 2px;
   @media (max-width: ${props => props.theme.breakpoints.sm}) {
@@ -47,11 +47,7 @@ const SettingsContainer = styled.div`
   background-color: ${(props) => props.theme.background};
   `
 
-function GameSettingsPage({ onStartGame }) {
-
-  const [selectedDifficulty, setSelectedDifficulty] = useState('beginner');
-  const [selectedTheme, setSelectedTheme] = useState('light');
-  const [selectedGridSize, setSelectedGridSize] = useState('medium');
+function GameSettingsPage() {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -59,14 +55,12 @@ function GameSettingsPage({ onStartGame }) {
   // Function to handle starting the game with selected settings
   const handleStartGame = () => {
     navigate('/board');
-
   };
 
   return (
     <SettingsContainer>
       <SettingsWrapper>
         <Title>MINESWEEPER</Title>
-
         <SettingItem>
           <FormControl sx={{ minWidth: 200 }}>
             <InputLabel id="difficulty-label">Difficulty</InputLabel>
@@ -78,18 +72,18 @@ function GameSettingsPage({ onStartGame }) {
               <MenuItem value="beginner">Beginner</MenuItem>
               <MenuItem value="normal">Normal</MenuItem>
               <MenuItem value="hard">Hard</MenuItem>
-              <MenuItem value="expert">Expert</MenuItem>
             </Select>
           </FormControl>
         </SettingItem>
 
         <SettingItem>
-          <FormControl sx={{ minWidth: 200 }}>
+          <FormControl sx={{ minWidth: 200 }} >
             <InputLabel>Theme</InputLabel>
             <Select
               value={gameSettings.theme}
               onChange={(e) => dispatch(setTheme(e.target.value))}
               label="Theme"
+
             >
               <MenuItem value="light">Light</MenuItem>
               <MenuItem value="dark">Dark</MenuItem>

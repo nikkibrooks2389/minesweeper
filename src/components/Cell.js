@@ -11,10 +11,10 @@ import { useDispatch, useSelector } from 'react-redux';
 const StyledCell = styled.div`
 width: ${props => props.gridSize};
 height: ${props => props.gridSize};
-  border-top: 2px solid #ffffff; /* Light border for top and left */
-  border-left: 2px solid #ffffff;
-  border-bottom: 2px solid #7b7b7b; /* Darker border for bottom and right */
-  border-right: 2px solid #7b7b7b;
+  border-top: 2px solid ${(props) => props.theme.cellBackgroundRevealed}; /* Light border for top and left */
+  border-left: 2px solid ${(props) => props.theme.cellBackgroundRevealed};
+  border-bottom: 2px solid${(props) => props.theme.secondaryBackground}; /* Darker border for bottom and right */
+  border-right: 2px solid${(props) => props.theme.secondaryBackground};
   display: flex;
   justify-content: center;
   align-items: center;

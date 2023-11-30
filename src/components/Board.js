@@ -8,8 +8,6 @@ import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectGameSettings } from '../redux/gameSettingsSlice';
 import { useNavigate } from 'react-router-dom';
-
-
 const PannelButton = styled.button`
   background-color:${(props) => props.theme.cellBackgroundRevealed};
   color: black;
@@ -20,8 +18,9 @@ const PannelButton = styled.button`
   user-select: none;
 `;
 
-const BoardContainer = styled.div`
+const GamePage = styled.div`
     background-color: ${(props) => props.theme.background};  
+    min-height: 100vh;
 `;
 
 const BoardWrapper = styled.div`    
@@ -29,7 +28,6 @@ const BoardWrapper = styled.div`
     text-align: center;
     font-size: 35px;
     width: fit-content;
-    // padding: 20px;
 `
 
 const Row = styled.div`
@@ -45,8 +43,7 @@ const ResetBoard = styled.button`
     padding: 3px ;
     transition: all 0.2s ease-in-out;
     cursor: pointer;
-    `;
-
+`;
 
 const GameStatus = styled.div`
   color: red;
@@ -54,15 +51,12 @@ const GameStatus = styled.div`
   visibility: ${props => props.show ? 'visible' : 'hidden'};
   font-family: "Press Start 2P", cursive;
   padding: 1rem;
-  min-height: 40px; // Adjust the value based on the space needed
+  min-height: 40px;
   text-align: center;
 `;
 
-
-
 const TopPanel = styled.div`
-    width: 100vw; // Set width to 100% of the viewport width
-    box-sizing: border-box; // Include padding and border in the element's total width
+    box-sizing: border-box;
     border-top: 2px solid #ffffff;
     border-left: 2px solid #ffffff;
     border-bottom: 2px solid #7b7b7b;
@@ -71,8 +65,13 @@ const TopPanel = styled.div`
     justify-content: space-between;
     align-items: center;
     padding: 20px;
-    margin-bottom: 20px;
     border-radius: 5px;
+position: fixed;
+
+    top: 0;
+    left: 0;
+    width: 100vw;
+    background-color: ${(props) => props.theme.secondaryBackground};
 `;
 
 const ScoreBoard = styled.div`
@@ -85,10 +84,8 @@ const ScoreBoard = styled.div`
     border-radius: 5px;
     text-align: center;
     box-shadow: inset 0 0 5px #333333;
-    // font-family: 'VT323', monospace;
     font-family: "Press Start 2P", cursive;
     font-weight: bold;
-
 `;
 
 const TopPanelCenter = styled.div`
@@ -100,15 +97,26 @@ const TopPanelCenter = styled.div`
 `;
 
 const Grid = styled.div`
-    width: fit-content;
-    padding: 1rem;
+    align-self: center;
+    justify-self: center;
+    height: 100%;
+    border-top: 8px solid ${(props) => props.theme.cellBackgroundRevealed}; /* Light border for top and left */
+    border-left: 8px solid ${(props) => props.theme.cellBackgroundRevealed};
+    border-bottom: 8px solid${(props) => props.theme.secondaryBackground}; /* Darker border for bottom and right */
+    border-right: 8px solid${(props) => props.theme.secondaryBackground};
 `;
-
 
 const Emoji = styled.span`
     background-color:${(props) => props.theme.cellBackgroundRevealed};
     font-size: 1.3rem; 
 `;
+
+const GameWrapper = styled.div`
+    display: flex;
+    min-height: 100vh;
+    justify-content: center;
+`;
+
 
 function Board({ theme, ...props }) {
     const [grid, setGrid] = useState([]);
@@ -120,8 +128,8 @@ function Board({ theme, ...props }) {
     const [minesLeft, setMinesLeft] = useState(0);
     const [timer, setTimer] = useState(0);
     const [gameWon, setGameWon] = useState(false);
-    const [topPanelStyle, setTopPanelStyle] = useState({});
-    const [boardContainerStyle, setBoardContainerStyle] = useState({});
+
+    const [gameWrapperStyle, setGameWrapperStyle] = useState({});
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -174,25 +182,11 @@ function Board({ theme, ...props }) {
             // Ensure the DOM is fully loaded
             if (boardRef.current) {
                 const isBoardWider = boardRef.current.offsetWidth > window.innerWidth;
-                const isMoble = window.innerWidth < parseInt(theme.breakpoints.sm, 10);;
-                console.log(isMoble)
 
-
-                setTopPanelStyle({
-                    padding: '1rem 2rem',
-                    width: isBoardWider || isMoble ? '100vw' : boardRef.current.offsetWidth + 'px',
-                    position: isBoardWider || isMoble ? 'fixed' : 'initial',
-                    top: isBoardWider || isMoble ? '0' : null,
-                });
-
-                setBoardContainerStyle({
+                setGameWrapperStyle({
                     display: 'flex',
-                    justifyContent: isBoardWider ? 'unset' : 'center',
                     alignItems: isBoardWider ? 'unset' : 'center',
-                    marginTop: isBoardWider ? '6rem' : '0',
                     flexDirection: "column",
-                    height: isBoardWider ? `calc(100vh - 11rem)` : '100vh',
-
                 });
             }
         };
@@ -270,47 +264,51 @@ function Board({ theme, ...props }) {
         setIsFlagMode(!isFlagMode);
     };
 
+
+
     return (
-        <BoardContainer style={boardContainerStyle}>
-            <TopPanel style={topPanelStyle}>
-                <ScoreBoard> {minesLeft}</ScoreBoard>
-                <TopPanelCenter>
-                    <PannelButton onClick={goToSettings}>
-                        <FontAwesomeIcon icon={faCog} style={{ cursor: 'pointer' }} /></PannelButton>
+        <GamePage>
+            <GameWrapper style={gameWrapperStyle}>
+                <TopPanel >
+                    <ScoreBoard> {minesLeft}</ScoreBoard>
+                    <TopPanelCenter>
+                        <PannelButton onClick={goToSettings}>
+                            <FontAwesomeIcon icon={faCog} style={{ cursor: 'pointer' }} /></PannelButton>
 
-                    <PannelButton onClick={toggleFlagMode} isFlagMode={isFlagMode}>
-                        {isFlagMode ? (
-                            <FontAwesomeIcon icon={faFlag} style={{ color: 'red' }} />
-                        ) : (
-                            <FontAwesomeIcon icon={faFlag} style={{ color: 'grey' }} />
-                        )}
-                    </PannelButton>
-                    <ResetBoard onClick={() => freshBoard()}>   <Emoji>{gameOver ? '😢' : '😀'}</Emoji></ResetBoard>
-                </TopPanelCenter>
-                <ScoreBoard> {timer} </ScoreBoard>
-            </TopPanel>
-            <BoardWrapper>
+                        <PannelButton onClick={toggleFlagMode} isFlagMode={isFlagMode}>
+                            {isFlagMode ? (
+                                <FontAwesomeIcon icon={faFlag} style={{ color: 'red' }} />
+                            ) : (
+                                <FontAwesomeIcon icon={faFlag} style={{ color: 'grey' }} />
+                            )}
+                        </PannelButton>
+                        <ResetBoard onClick={() => freshBoard()}>   <Emoji>{gameOver ? '😢' : '😀'}</Emoji></ResetBoard>
+                    </TopPanelCenter>
+                    <ScoreBoard> {timer} </ScoreBoard>
+                </TopPanel>
+                <BoardWrapper>
 
-                <GameStatus show={gameOver || gameWon}>
-                    {gameOver ? "GAME OVER" : gameWon ? "YOU WIN!" : ""}
-                </GameStatus>
-                <Grid ref={boardRef}>
-                    {grid.map((singlerow, index1) => (
-                        <Row key={index1}>
-                            {singlerow.map((singlecol, index2) => (
-                                <Cell
-                                    isFlagMode={isFlagMode}
-                                    details={singlecol}
-                                    key={index2}
-                                    updateFlag={updateFlag}
-                                    revealCell={revealCell}
-                                />
-                            ))}
-                        </Row>
-                    ))}
-                </Grid>
-            </BoardWrapper>
-        </BoardContainer>
+                    <GameStatus show={gameOver || gameWon}>
+                        {gameOver ? "GAME OVER" : gameWon ? "YOU WIN!" : ""}
+                    </GameStatus>
+                    <Grid ref={boardRef}>
+                        {grid.map((singlerow, index1) => (
+                            <Row key={index1}>
+                                {singlerow.map((singlecol, index2) => (
+                                    <Cell
+                                        isFlagMode={isFlagMode}
+                                        details={singlecol}
+                                        key={index2}
+                                        updateFlag={updateFlag}
+                                        revealCell={revealCell}
+                                    />
+                                ))}
+                            </Row>
+                        ))}
+                    </Grid>
+                </BoardWrapper>
+            </GameWrapper>
+        </GamePage >
     );
 }
 

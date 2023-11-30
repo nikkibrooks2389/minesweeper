@@ -5,7 +5,7 @@ export const lightTheme = {
     background: '#E0E0E0',
     secondaryBackground: '#C0C0C0',
     textColor: '#000000',
-    cellBackgroundRevealed: '#FFFFFF',
+    cellBackgroundRevealed: '#ebebeb',
     cellBackgroundUnrevealed: '#E0E0E0',
     cellTextColor: '#000000',
     cellvalue1: '#0000FF',
@@ -19,6 +19,7 @@ export const lightTheme = {
 
 export const darkTheme = {
     background: '#333333',
+    secondaryBackground: '#222222',
     textColor: '#FFFFFF',
     cellBackgroundRevealed: '#555555',
     cellBackgroundUnrevealed: '#333333',
