@@ -216,16 +216,20 @@ function Board({ theme, ...props }) {
     };
 
 
-    const updateFlag = (e, x, y) => {
-        e.preventDefault();
+    const updateFlag = (x, y) => {
         let newGrid = JSON.parse(JSON.stringify(grid));
+
+
         newGrid[x][y].flagged = !newGrid[x][y].flagged;
         setGrid(newGrid);
 
-        const flaggedMines = mineLocation.filter(
-            ([mineX, mineY]) => newGrid[mineX][mineY].flagged
-        ).length;
-        const remainingMines = mineCount - flaggedMines;
+        // Count all flagged cells, regardless of whether they contain mines
+        const flaggedCellsCount = newGrid.flat().reduce((count, cell) => {
+            return count + (cell.flagged ? 1 : 0);
+        }, 0);
+
+        // Update minesLeft based on the number of flagged cells
+        const remainingMines = mineCount - flaggedCellsCount;
         setMinesLeft(remainingMines);
     };
 
@@ -236,6 +240,7 @@ function Board({ theme, ...props }) {
             return;
         }
 
+        // First click logic
         if (isFirstClick) {
             const { rows, columns, mineCount } = gameSettings;
             const newBoard = initBoard(rows, columns, mineCount, [x, y]);
@@ -245,26 +250,41 @@ function Board({ theme, ...props }) {
             startTimer();
         }
 
+        // Reveal the clicked cell
         if (newGrid[x][y].value === "X") {
+            // Reveal all mines if a mine is clicked
             for (let i = 0; i < mineLocation.length; i++) {
                 newGrid[mineLocation[i][0]][mineLocation[i][1]].revealed = true;
             }
-            setGrid(newGrid);
             setGameOver(true);
             stopTimer();
+        } else {
+            // Reveal adjacent cells if the clicked cell is not a mine
+            let result = revealed(newGrid, x, y, nonMinecount);
+            newGrid = result.arr;
+            setNonMinecount(result.newNonMines);
         }
 
-        let revealedBoard = revealed(newGrid, x, y, nonMinecount);
-        setGrid(revealedBoard.arr);
-        setNonMinecount(revealedBoard.newNonMines);
-
+        setGrid(newGrid);
+        // Check for win condition
+        if (nonMinecount === rows * columns - mineCount) {
+            setGameWon(true);
+            stopTimer();
+        }
     };
 
     const toggleFlagMode = () => {
         setIsFlagMode(!isFlagMode);
     };
 
+    const handleRightClick = (e, x, y) => {
 
+        if (window.innerWidth > parseInt(theme.breakpoints.sm, 10)) {
+            e.preventDefault(); // Handle the right-click event here
+            // console.log(x, y)
+            updateFlag(x, y);    // Pass only the coordinates to updateFlag
+        }
+    };
 
     return (
         <GamePage>
@@ -292,15 +312,17 @@ function Board({ theme, ...props }) {
                         {gameOver ? "GAME OVER" : gameWon ? "YOU WIN!" : ""}
                     </GameStatus>
                     <Grid ref={boardRef}>
-                        {grid.map((singlerow, index1) => (
-                            <Row key={index1}>
-                                {singlerow.map((singlecol, index2) => (
+                        {grid.map((singlerow, rowIndex) => (
+                            <Row key={rowIndex}>
+                                {singlerow.map((cell, colIndex) => (
                                     <Cell
-                                        isFlagMode={isFlagMode}
-                                        details={singlecol}
-                                        key={index2}
+                                        details={cell}
+                                        key={colIndex}
                                         updateFlag={updateFlag}
                                         revealCell={revealCell}
+                                        isFlagMode={isFlagMode}
+                                        onContextMenu={(e) => handleRightClick(e, rowIndex, colIndex)}
+                                        gameOver={gameOver}
                                     />
                                 ))}
                             </Row>
