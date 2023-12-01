@@ -1,13 +1,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { initBoard } from '../Util/initBoard';
 import { revealed } from '../Util/reveal';
-import Cell from './Cell';
+import Cell from '../components/Cell';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFlag, faCog } from '@fortawesome/free-solid-svg-icons';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectGameSettings } from '../redux/gameSettingsSlice';
 import { useNavigate } from 'react-router-dom';
+import { useTimer } from '../hooks/useTimer';
+import { useFreshBoard } from '../hooks/useFreshBoard';
+import { useGameEffects } from '../hooks/useGameEffects';
+
 const PannelButton = styled.button`
   background-color:${(props) => props.theme.cellBackgroundRevealed};
   color: black;
@@ -126,17 +130,17 @@ function Board({ theme, ...props }) {
     const [isFirstClick, setIsFirstClick] = useState(true);
     const [gameOver, setGameOver] = useState(false);
     const [minesLeft, setMinesLeft] = useState(0);
-    const [timer, setTimer] = useState(0);
     const [gameWon, setGameWon] = useState(false);
 
     const [gameWrapperStyle, setGameWrapperStyle] = useState({});
 
-    const dispatch = useDispatch();
+
     const navigate = useNavigate();
+    const { timer, startTimer, stopTimer, resetTimer } = useTimer();
 
     const gameSettings = useSelector(selectGameSettings);
 
-    const timerRef = useRef(null);
+
     const boardRef = useRef(null);
 
     const { rows, columns, mineCount } = gameSettings;
@@ -146,74 +150,15 @@ function Board({ theme, ...props }) {
         navigate('/settings');
     };
 
-    const freshBoard = () => {
-        // Use gameSettings to get rows, columns, and mineCount
-
-        const newBoard = initBoard(rows, columns, mineCount, null);
-        setGrid(newBoard.board);
-        setIsFlagMode(false);
-        setIsFirstClick(true);
-        setNonMinecount(0);
-        setGameOver(false);
-        setMineLocation([]);
-        setMinesLeft(mineCount); // Initialize minesLeft
-        stopTimer(); // Stop timer
-        setTimer(0); // Reset timer
-        setGameWon(false); // Reset gameWon
-    }
-
-    useEffect(() => {
-        freshBoard();
-
-        return () => {
-            clearInterval(timerRef.current);
-        };
-    }, [gameSettings]);
-
-    useEffect(() => {
-        if ((rows * columns - mineCount) + nonMinecount === 0) {
-            setGameWon(true);
-            stopTimer();
-        }
-    }, [grid, nonMinecount, rows, columns, mineCount]);
-
-    useEffect(() => {
-        const handleResize = () => {
-            // Ensure the DOM is fully loaded
-            if (boardRef.current) {
-                const isBoardWider = boardRef.current.offsetWidth > window.innerWidth;
-
-                setGameWrapperStyle({
-                    display: 'flex',
-                    alignItems: isBoardWider ? 'unset' : 'center',
-                    flexDirection: "column",
-                });
-            }
-        };
-
-        // Call once when the component mounts
-        // Using setTimeout to ensure this runs after the DOM is fully painted
-        setTimeout(handleResize, 0);
-
-        // Set up event listener for resize events
-        window.addEventListener('resize', handleResize);
-
-        // Cleanup
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
+    const freshBoard = useFreshBoard(gameSettings, setGrid, setIsFlagMode, setIsFirstClick, setNonMinecount, setGameOver, setMineLocation, setMinesLeft, resetTimer, setGameWon);
 
 
-    const startTimer = () => {
-        clearInterval(timerRef.current);
-        setTimer(0); // Reset timer
-        timerRef.current = setInterval(() => {
-            setTimer((prevTimer) => prevTimer + 1);
-        }, 1000);
-    };
-
-    const stopTimer = () => {
-        clearInterval(timerRef.current);
-    };
+    // Using the custom hook for all useEffects
+    useGameEffects({
+        rows, columns, mineCount, gameSettings, boardRef,
+        freshBoard, nonMinecount, setGameWon,
+        stopTimer, setGameWrapperStyle
+    });
 
 
     const updateFlag = (x, y) => {
