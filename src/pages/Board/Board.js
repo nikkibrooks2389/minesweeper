@@ -1,128 +1,33 @@
-import React, { useState, useEffect, useRef } from "react";
-import { initBoard } from '../Util/initBoard';
-import { revealed } from '../Util/reveal';
-import Cell from '../components/Cell';
+import React, { useState, useRef, useEffect } from "react";
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFlag, faCog } from '@fortawesome/free-solid-svg-icons';
-import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectGameSettings } from '../redux/gameSettingsSlice';
-import { useNavigate } from 'react-router-dom';
-import { useTimer } from '../hooks/useTimer';
-import { useFreshBoard } from '../hooks/useFreshBoard';
-import { useGameEffects } from '../hooks/useGameEffects';
-
-const PannelButton = styled.button`
-  background-color:${(props) => props.theme.cellBackgroundRevealed};
-  color: black;
-  padding: 8px 10px ;
-  font-size: 1rem;
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
-  user-select: none;
-`;
-
-const GamePage = styled.div`
-    background-color: ${(props) => props.theme.background};  
-    min-height: 100vh;
-`;
-
-const BoardWrapper = styled.div`    
-    color: white;
-    text-align: center;
-    font-size: 35px;
-    width: fit-content;
-`
-
-const Row = styled.div`
-  display: flex;
-  flex-direction: row;
-  width: fit-content;
-  color: white;
-`;
-
-const ResetBoard = styled.button`
-    background-color:${(props) => props.theme.cellBackgroundRevealed};
-    color: black;
-    padding: 3px ;
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
-`;
-
-const GameStatus = styled.div`
-  color: red;
-  font-size: 2rempx;
-  visibility: ${props => props.show ? 'visible' : 'hidden'};
-  font-family: "Press Start 2P", cursive;
-  padding: 1rem;
-  min-height: 40px;
-  text-align: center;
-`;
-
-const TopPanel = styled.div`
-    box-sizing: border-box;
-    border-top: 2px solid #ffffff;
-    border-left: 2px solid #ffffff;
-    border-bottom: 2px solid #7b7b7b;
-    border-right: 2px solid #7b7b7b;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    border-radius: 5px;
-position: fixed;
-
-    top: 0;
-    left: 0;
-    width: 100vw;
-    background-color: ${(props) => props.theme.secondaryBackground};
-`;
-
-const ScoreBoard = styled.div`
-    background-color: #000000;
-    color: #ff0000;
-    width: 2rem;
-    border: 3px solid #777777;    
-    padding: 5px 10px;
-    font-size: 1rem;
-    border-radius: 5px;
-    text-align: center;
-    box-shadow: inset 0 0 5px #333333;
-    font-family: "Press Start 2P", cursive;
-    font-weight: bold;
-`;
-
-const TopPanelCenter = styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
-    padding: 0 20px;
-`;
-
-const Grid = styled.div`
-    align-self: center;
-    justify-self: center;
-    height: 100%;
-    border-top: 8px solid ${(props) => props.theme.cellBackgroundRevealed}; /* Light border for top and left */
-    border-left: 8px solid ${(props) => props.theme.cellBackgroundRevealed};
-    border-bottom: 8px solid${(props) => props.theme.secondaryBackground}; /* Darker border for bottom and right */
-    border-right: 8px solid${(props) => props.theme.secondaryBackground};
-`;
-
-const Emoji = styled.span`
-    background-color:${(props) => props.theme.cellBackgroundRevealed};
-    font-size: 1.3rem; 
-`;
-
-const GameWrapper = styled.div`
-    display: flex;
-    min-height: 100vh;
-    justify-content: center;
-`;
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
 
 
-function Board({ theme, ...props }) {
+import { useTimer } from '../../hooks/useTimer';
+import { useFreshBoard } from '../../hooks/useFreshBoard';
+import { useGameEffects } from '../../hooks/useGameEffects';
+
+import { initBoard } from '../../Util/initBoard';
+import { revealed } from '../../Util/reveal';
+
+import Cell from '../../components/Cell/Cell';
+import {
+    PannelButton, GamePage, BoardWrapper, Row, ResetBoard,
+    GameStatus, TopPanel, ScoreBoard, TopPanelCenter, Grid, Emoji, GameWrapper
+} from './StyledBoardComponents'; // Import styled components
+
+import { selectGameSettings } from '../../redux/gameSettingsSlice';
+
+
+const Board = ({ theme }) => {
     const [grid, setGrid] = useState([]);
     const [nonMinecount, setNonMinecount] = useState(0);
     const [mineLocation, setMineLocation] = useState([]);
@@ -131,39 +36,39 @@ function Board({ theme, ...props }) {
     const [gameOver, setGameOver] = useState(false);
     const [minesLeft, setMinesLeft] = useState(0);
     const [gameWon, setGameWon] = useState(false);
-
     const [gameWrapperStyle, setGameWrapperStyle] = useState({});
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-
+    // Redux and Navigation
     const navigate = useNavigate();
-    const { timer, startTimer, stopTimer, resetTimer } = useTimer();
-
     const gameSettings = useSelector(selectGameSettings);
-
-
-    const boardRef = useRef(null);
-
     const { rows, columns, mineCount } = gameSettings;
 
-    const goToSettings = () => {
-        freshBoard();
-        navigate('/settings');
-    };
 
+
+    // Refs
+    const boardRef = useRef(null);
+
+    // Custom hooks
+    const { timer, startTimer, stopTimer, resetTimer } = useTimer();
     const freshBoard = useFreshBoard(gameSettings, setGrid, setIsFlagMode, setIsFirstClick, setNonMinecount, setGameOver, setMineLocation, setMinesLeft, resetTimer, setGameWon);
-
-
-    // Using the custom hook for all useEffects
     useGameEffects({
         rows, columns, mineCount, gameSettings, boardRef,
         freshBoard, nonMinecount, setGameWon,
         stopTimer, setGameWrapperStyle
     });
 
+    // Event handlers
+    const onSettingsClick = () => {
+        freshBoard();
+        navigate('/settings');
+    };
+
 
     const updateFlag = (x, y) => {
-        let newGrid = JSON.parse(JSON.stringify(grid));
 
+        let newGrid = JSON.parse(JSON.stringify(grid));
+        if (newGrid[x][y].revealed) return;
 
         newGrid[x][y].flagged = !newGrid[x][y].flagged;
         setGrid(newGrid);
@@ -185,7 +90,7 @@ function Board({ theme, ...props }) {
             return;
         }
 
-        // First click logic
+
         if (isFirstClick) {
             const { rows, columns, mineCount } = gameSettings;
             const newBoard = initBoard(rows, columns, mineCount, [x, y]);
@@ -204,6 +109,7 @@ function Board({ theme, ...props }) {
             setGameOver(true);
             stopTimer();
         } else {
+
             // Reveal adjacent cells if the clicked cell is not a mine
             let result = revealed(newGrid, x, y, nonMinecount);
             newGrid = result.arr;
@@ -211,6 +117,7 @@ function Board({ theme, ...props }) {
         }
 
         setGrid(newGrid);
+
         // Check for win condition
         if (nonMinecount === rows * columns - mineCount) {
             setGameWon(true);
@@ -226,18 +133,35 @@ function Board({ theme, ...props }) {
 
         if (window.innerWidth > parseInt(theme.breakpoints.sm, 10)) {
             e.preventDefault(); // Handle the right-click event here
-            // console.log(x, y)
+
             updateFlag(x, y);    // Pass only the coordinates to updateFlag
         }
     };
 
+    const handleCloseModal = (resetGame) => {
+        if (resetGame) {
+            freshBoard();
+            setIsModalOpen(false);
+        } else {
+            setIsModalOpen(false);
+        }
+
+    };
+
+    useEffect(() => {
+        if (gameOver || gameWon) {
+            setIsModalOpen(true);
+        }
+    }, [gameOver, gameWon]);
+
+
     return (
-        <GamePage>
+        <>
             <GameWrapper style={gameWrapperStyle}>
                 <TopPanel >
                     <ScoreBoard> {minesLeft}</ScoreBoard>
                     <TopPanelCenter>
-                        <PannelButton onClick={goToSettings}>
+                        <PannelButton onClick={onSettingsClick}>
                             <FontAwesomeIcon icon={faCog} style={{ cursor: 'pointer' }} /></PannelButton>
 
                         <PannelButton onClick={toggleFlagMode} isFlagMode={isFlagMode}>
@@ -252,10 +176,6 @@ function Board({ theme, ...props }) {
                     <ScoreBoard> {timer} </ScoreBoard>
                 </TopPanel>
                 <BoardWrapper>
-
-                    <GameStatus show={gameOver || gameWon}>
-                        {gameOver ? "GAME OVER" : gameWon ? "YOU WIN!" : ""}
-                    </GameStatus>
                     <Grid ref={boardRef}>
                         {grid.map((singlerow, rowIndex) => (
                             <Row key={rowIndex}>
@@ -275,7 +195,53 @@ function Board({ theme, ...props }) {
                     </Grid>
                 </BoardWrapper>
             </GameWrapper>
-        </GamePage >
+            <Dialog
+                open={isModalOpen}
+                onClose={handleCloseModal}
+                aria-labelledby="game-end-modal"
+                aria-describedby="game-end-message"
+                sx={{
+                    '& .MuiDialog-paper': {
+                        backgroundColor: theme.background
+
+                    }
+                }}
+
+            >
+                <DialogTitle id="game-end-modal" style={{ color: theme.textColor, textAlign: 'center', fontFamily: '"Press Start 2P", cursive', }}>{"Game Over"}</DialogTitle>
+                <DialogContent style={{ textAlign: 'center' }}>
+                    <DialogContentText
+                        id="game-end-message"
+                        style={{
+                            textAlign: 'center',
+                            color: gameWon ? 'green' : 'red',
+
+                            fontFamily: '"Press Start 2P", cursive',
+                        }}
+                    >
+                        {gameWon ? "Congratulations, You Won!" : "Sorry, You Lost."}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions style={{ justifyContent: 'center' }}>
+                    <Button
+                        size="small"
+                        onClick={() => handleCloseModal(false)}
+                        variant="contained"
+                        style={{ margin: '8px' }}
+                    >
+                        Close
+                    </Button>
+                    <Button
+                        size="small"
+                        onClick={() => handleCloseModal(true)}
+                        variant="contained"
+                        style={{ margin: '8px' }}
+                    >
+                        Reset Game
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </>
     );
 }
 
