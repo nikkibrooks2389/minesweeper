@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFlag, faCog } from '@fortawesome/free-solid-svg-icons';
@@ -38,6 +39,7 @@ const Board = ({ theme }) => {
     const [gameWon, setGameWon] = useState(false);
     const [gameWrapperStyle, setGameWrapperStyle] = useState({});
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [username, setUsername] = useState('');
 
     // Redux and Navigation
     const navigate = useNavigate();
@@ -154,6 +156,19 @@ const Board = ({ theme }) => {
         }
     }, [gameOver, gameWon]);
 
+    const submitScore = () => {
+        console.log('Submitting score:', username, timer, gameSettings.difficulty)
+        axios.post('http://localhost:3000/api/scores', {
+            name: username,
+            time: timer,
+            level: gameSettings.difficulty // Assuming you have a difficulty setting in gameSettings
+        })
+            .then(response => {
+                console.log('Score submitted:', response.data);
+                handleCloseModal(true); // Reset the game after submission
+            })
+            .catch(error => console.error('Error:', error));
+    };
 
     return (
         <>
@@ -221,7 +236,22 @@ const Board = ({ theme }) => {
                     >
                         {gameWon ? "Congratulations, You Won!" : "Sorry, You Lost."}
                     </DialogContentText>
+                    {gameWon && (
+                        <input
+                            type="text"
+                            placeholder="Enter your name"
+                            value={username}
+                            onChange={(e) => setUsername(e.target.value)}
+                            style={{
+                                width: '100%',
+                                padding: '10px',
+                                marginTop: '20px',
+                                fontFamily: '"Press Start 2P", cursive',
+                            }}
+                        />
+                    )}
                 </DialogContent>
+
                 <DialogActions style={{ justifyContent: 'center' }}>
                     <Button
                         size="small"
@@ -233,12 +263,13 @@ const Board = ({ theme }) => {
                     </Button>
                     <Button
                         size="small"
-                        onClick={() => handleCloseModal(true)}
+                        onClick={gameWon ? submitScore : handleCloseModal} // Call submitScore when this button is clicked
                         variant="contained"
                         style={{ margin: '8px' }}
                     >
-                        Reset Game
+                        {gameWon ? "Submit Score" : "Play Again"}
                     </Button>
+
                 </DialogActions>
             </Dialog>
         </>
