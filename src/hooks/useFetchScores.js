@@ -12,10 +12,10 @@ const useFetchScores = () => {
         const fetchScores = async () => {
             setIsLoading(true);
             try {
-                const response = await axios.get('http://localhost:3000/api/scores');
+                const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/api/leaderboard`);
                 dispatch(setLeaderBoard(response.data));
             } catch (error) {
-                console.error('Error fetching scores:', error);
+                console.error('Error fetching leaderboard:', error);
             } finally {
                 setIsLoading(false);
             }

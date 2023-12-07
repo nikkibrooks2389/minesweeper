@@ -156,18 +156,18 @@ const Board = ({ theme }) => {
         }
     }, [gameOver, gameWon]);
 
-    const submitScore = () => {
-        console.log('Submitting score:', username, timer, gameSettings.difficulty)
-        axios.post('http://localhost:3000/api/scores', {
-            name: username,
-            time: timer,
-            level: gameSettings.difficulty // Assuming you have a difficulty setting in gameSettings
-        })
-            .then(response => {
-                console.log('Score submitted:', response.data);
-                handleCloseModal(true); // Reset the game after submission
-            })
-            .catch(error => console.error('Error:', error));
+    const submitScore = async () => {
+        try {
+
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/leaderboard`, {
+                name: username,
+                time: timer,
+                level: gameSettings.difficulty // Assuming you have a difficulty setting in gameSettings
+            });
+            handleCloseModal(true); // Reset the game after submission
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
     return (
