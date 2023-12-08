@@ -4,7 +4,14 @@ import { GlobalStyle } from './style/globalStyle';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import { AppRoutes } from './routes/AppRoutes';
 import { useTheme } from './hooks/useTheme';
+import styled from 'styled-components'; // Import styled-components
+
 function App() {
+
+  const AppContainer = styled.div`
+  height: 100vh;
+  overflow: hidden;
+`;
 
   const themeToApply = useTheme();
 
@@ -12,7 +19,9 @@ function App() {
     <ThemeProvider theme={themeToApply}>
       <GlobalStyle />
       <Router>
-        <AppRoutes theme={themeToApply} />
+        <AppContainer>
+          <AppRoutes theme={themeToApply} />
+        </AppContainer>
       </Router>
     </ThemeProvider>
   );

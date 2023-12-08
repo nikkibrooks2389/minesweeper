@@ -58,7 +58,7 @@ function GameSettingsPage() {
           Start Game
         </Button>
         <Button style={{ marginTop: "1rem" }} size="large" variant="contained" onClick={openScoreboard}>
-          View Scoreboard
+          View Leader Board
         </Button>
         <Modal open={isScoreboardOpen} onClose={closeScoreboard}>
           <div style={modalStyle}>

@@ -13,9 +13,14 @@ export const PannelButton = styled.button`
 
 
 export const BoardWrapper = styled.div`    
+height: 85%;
+display: flex;
+justify-content: center;
+
     color: white;
     text-align: center;
     font-size: 35px;
+  padding: 20px;
   
 `
 
@@ -45,9 +50,7 @@ export const TopPanel = styled.div`
     align-items: center;
     padding: 20px;
     border-radius: 5px;
-    position: fixed;
-    top: 0;
-    left: 0;
+ 
     width: 100vw;
     background-color: ${(props) => props.theme.secondaryBackground};
 `;
@@ -75,15 +78,17 @@ export const TopPanelCenter = styled.div`
 `;
 
 export const Grid = styled.div`
+
     align-self: center;
     justify-self: center;
-    margin-top: 150px;
-    margin: 80px 15 px 15px 15px;
+
     border-top: 8px solid ${(props) => props.theme.cellBackgroundRevealed}; /* Light border for top and left */
     border-left: 8px solid ${(props) => props.theme.cellBackgroundRevealed};
     border-bottom: 8px solid${(props) => props.theme.secondaryBackground}; /* Darker border for bottom and right */
     border-right: 8px solid${(props) => props.theme.secondaryBackground};
     overflow: auto;
+    overflow-y: auto;
+    max-height: 100%;
 `;
 
 export const Emoji = styled.span`
@@ -93,7 +98,7 @@ export const Emoji = styled.span`
 
 export const GameWrapper = styled.div`
     display: flex;
-    height:calc(100vh - 80px);
-    justify-content: center;
+    height: 100vh;
+
 
 `;
