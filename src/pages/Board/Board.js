@@ -243,9 +243,9 @@ const Board = ({ theme }) => {
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             style={{
-                                width: '100%',
+                                // width: '100%',
                                 padding: '10px',
-                                marginTop: '20px',
+                                margin: '20px 10px 10px 10px',
                                 fontFamily: '"Press Start 2P", cursive',
                             }}
                         />

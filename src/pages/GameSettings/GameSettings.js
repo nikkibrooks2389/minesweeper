@@ -12,7 +12,7 @@ import { SettingsWrapper, Title, SettingsContainer } from '../GameSettings/Style
 
 
 
-function GameSettingsPage() {
+function GameSettingsPage({ theme }) {
   const [isScoreboardOpen, setIsScoreboardOpen] = useState(false);
 
 
@@ -38,7 +38,7 @@ function GameSettingsPage() {
     width: '80%',
     maxHeight: '80%',
     overflowY: 'auto',
-    backgroundColor: 'white',
+    backgroundColor: theme.secondaryBackground,
     boxShadow: 24,
     padding: '20px',
     outline: 'none',

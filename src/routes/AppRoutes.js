@@ -7,7 +7,7 @@ import Board from '../pages/Board/Board';
 export const AppRoutes = ({ theme }) => (
     <Routes>
         <Route path="/" element={<Navigate replace to="/settings" />} />
-        <Route path="/settings" element={<GameSettingsPage />} />
+        <Route path="/settings" element={<GameSettingsPage theme={theme} />} />
         <Route path="/board" element={<Board theme={theme} />} />
     </Routes>
 );

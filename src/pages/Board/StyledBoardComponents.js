@@ -58,9 +58,8 @@ export const TopPanel = styled.div`
 export const ScoreBoard = styled.div`
     background-color: #000000;
     color: #ff0000;
-    width: 2rem;
     border: 3px solid #777777;    
-    padding: 5px 10px;
+    padding: 10px 15px;
     font-size: 1rem;
     border-radius: 5px;
     text-align: center;
@@ -81,11 +80,8 @@ export const Grid = styled.div`
 
     align-self: center;
     justify-self: center;
+    border: 5px solid${(props) => props.theme.secondaryBackground}; /* Darker border for bottom and right */
 
-    border-top: 8px solid ${(props) => props.theme.cellBackgroundRevealed}; /* Light border for top and left */
-    border-left: 8px solid ${(props) => props.theme.cellBackgroundRevealed};
-    border-bottom: 8px solid${(props) => props.theme.secondaryBackground}; /* Darker border for bottom and right */
-    border-right: 8px solid${(props) => props.theme.secondaryBackground};
     overflow: auto;
     overflow-y: auto;
     max-height: 100%;

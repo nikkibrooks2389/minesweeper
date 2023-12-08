@@ -11,17 +11,20 @@ const LeaderBoardContainer = styled.div`
   justify-content: center;
   gap: 20px;
   margin-top: 20px;
+
 `;
 
 const LevelSection = styled.div`
   flex: 1;
   min-width: 250px;
+  max-height: 450px;
   background-color: #f2f2f2;
   padding: 15px;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
-
+  overflow: auto;
+background-color: ${(props) => props.theme.background};
   @media (max-width: 768px) {
     flex-basis: 100%;
   }
@@ -29,20 +32,19 @@ const LevelSection = styled.div`
 
 const ScoreList = styled.ul`
   list-style: none;
-  padding: 0;
+  padding: 0 2.5rem;
+  overflow-y: auto;
 `;
 
 const ScoreItem = styled.li`
-//   border-bottom: 1px solid #ddd;
-  padding: 8px 0;
 
-  &:last-child {
-    border-bottom: none;
-  }
+  padding: 8px 0;
+    display: flex;
+    justify-content: space-between;
 `;
 
 const LevelTitle = styled.h2`
-  color: #333;
+  color: ${(props) => props.theme.textColor};
   font-size: 1.2rem;
   margin-bottom: 15px;
 `;
@@ -87,7 +89,7 @@ const LeaderBoard = () => {
                                 <ScoreList>
                                     {sortAndSliceScores(scores).map((score, index) => (
                                         <ScoreItem key={index}>
-                                            {index + 1}. {score.name} - {score.time}
+                                            <span>{index + 1}. {score.name}</span> <span>{score.time}</span>
                                         </ScoreItem>
                                     ))}
                                 </ScoreList>
